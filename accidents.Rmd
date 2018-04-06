@@ -1,0 +1,35 @@
+---
+title: "На точак"
+output: html_notebook
+---
+```{r}
+library(ggplot2)
+library(tidyverse)
+```
+
+```{r}
+#get the data
+accidents <- as_tibble(read_csv("~/src/natochak/mvr-data.csv"))
+```
+
+```{r}
+#keep the traffic accidents
+traffacc <- accidents %>% 
+  #separate Date of event; having months as observations might be useful.
+  separate(DateOfEvent, c("Day", "Month", "Year"), sep = "\\.", remove = FALSE) %>% 
+  #filter so we keep just the traffic accidents
+  filter(Event == "сообраќајна незгода")
+```
+
+```{r}
+#On what type of roads traffic accidents happen?
+
+#Which months?
+
+#Is there a correlation between roads and outcome; months and outcome; age of bycicle rider and outcome?
+```
+
+
+
+
+
