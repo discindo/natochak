@@ -3,7 +3,6 @@ title: "На точак"
 output: html_notebook
 ---
 ```{r}
-library(ggplot2)
 library(tidyverse)
 ```
 
