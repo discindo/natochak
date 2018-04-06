@@ -79,7 +79,7 @@ ggplot(aes(x=Age, group=Vehicle, fill=Vehicle)) +
 
 ```
 
-```{r echo = FALSE}
+```{r echo = FALSE, eval = FALSE}
 #Is there a correlation between roads and outcome; months and outcome; age of bycicle rider and outcome?
 #chi2 tests for categorical variables
 tbl1<-with(traffacc, table(TypeOfRoad, Outcome))
