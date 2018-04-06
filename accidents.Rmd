@@ -42,7 +42,7 @@ traffacc %>% mutate(Crossroad2=case_when(Crossroad == "да" ~ "Да",
     scale_x_discrete(labels=c("Отворен", "Рурален", "Градски")) +
     theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
     scale_fill_brewer(palette = "Paired") +
-    labs(title="Сообраќајни незгоди на велосипедисти по видови на патишта и крстосници", 
+    labs(title="Сообраќајни незгоди по видови на патишта и крстосници", 
             x = "Видови патишта", y = "Број на сообраќајни незгоди", fill = "Крстосница") 
 ```
     
@@ -50,6 +50,10 @@ traffacc %>% mutate(Crossroad2=case_when(Crossroad == "да" ~ "Да",
 #Which months?
 with(traffacc, table(Month, Year))
 ```
+
+
+## Сообраќајни незгоди по возрасни групи
+Дистрибуцијата на велосипедисти по години што настрадале во сообраќајна незгода е бимодална: или тие (млади и стари) најмногу возат, или се најранливи во сообраќајот.
 
 ```{r echo = FALSE, warning = FALSE}
 #new data sets for plot by age of persons
@@ -77,6 +81,19 @@ ggplot(aes(x=Age, group=Vehicle, fill=Vehicle)) +
 
 ```{r echo = FALSE}
 #Is there a correlation between roads and outcome; months and outcome; age of bycicle rider and outcome?
+#chi2 tests for categorical variables
+tbl1<-with(traffacc, table(TypeOfRoad, Outcome))
+chisq.test(tbl1, correct = F)
 
+tbl2 <- with(traffacc, table(Month, Outcome))
+chisq.test(tbl2, correct = F)
+
+tbl3 <- with(traffacc, table(AgeV1, Outcome))
+chisq.test(tbl3, correct = F)
+```
+
+```{r}
 
 ```
+ 
+ 
