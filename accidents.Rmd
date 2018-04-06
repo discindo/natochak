@@ -8,7 +8,7 @@ library(tidyverse)
 
 ```{r}
 #get the data
-accidents <- as_tibble(read_csv("~/src/natochak/mvr-data.csv"))
+accidents <- as_tibble(read_csv("mvr-data.csv"))
 ```
 
 ```{r}
