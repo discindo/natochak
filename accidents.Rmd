@@ -22,11 +22,19 @@ traffacc <- accidents %>%
 ```
 
 ```{r}
-#On what type of roads traffic accidents happen?
+#On what type of roads traffic accidents happen and is it a crossroad?
+with(traffacc, table(TypeOfRoad, Crossroad))
+
+ggplot(traffacc, aes(TypeOfRoad)) +
+  geom_bar(aes(fill=Crossroad), width = 0.5) + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Сообраќајни незгоди на велосипедисти по видови на патишта и крстосници") 
 
 #Which months?
-
+with(traffacc, table(Month, Year))
+  
 #Is there a correlation between roads and outcome; months and outcome; age of bycicle rider and outcome?
+
 ```
 
 
