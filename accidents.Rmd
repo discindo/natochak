@@ -24,15 +24,26 @@ traffacc <- accidents %>%
 #On what type of roads traffic accidents happen and is it a crossroad?
 with(traffacc, table(TypeOfRoad, Crossroad))
 
-ggplot(traffacc, aes(TypeOfRoad)) +
-  geom_bar(aes(fill=Crossroad), width = 0.5) + 
-  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
-  labs(title="Сообраќајни незгоди на велосипедисти по видови на патишта и крстосници") 
+traffacc %>% mutate(Crossroad2=case_when(Crossroad == "да" ~ "Да",
+                                         Crossroad == "не" ~ "Не",
+                                         is.na(Crossroad) ~ "Нема податок")) %>%
+  ggplot(aes(TypeOfRoad)) +
+    geom_bar(aes(fill=Crossroad2), width = 0.5) +
+    scale_x_discrete(labels=c("Отворен", "Рурален", "Градски")) +
+    theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
+    scale_fill_brewer() +
+    labs(title="Сообраќајни незгоди на велосипедисти по видови на патишта и крстосници", 
+            x = "Видови патишта", y = "Број на сообраќајни незгоди", fill = "Крстосница") 
+
+    
 
 #Which months?
 with(traffacc, table(Month, Year))
-  
+
+#plot the age of cyclists and drivers
+
 #Is there a correlation between roads and outcome; months and outcome; age of bycicle rider and outcome?
+
 
 ```
 
