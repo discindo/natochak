@@ -1,19 +1,19 @@
 ---
-title: "На точак"
+title: "На точак: дополнета анализа од билтени на МВР"
 output:
   html_document:
     df_print: paged
 ---
-```{r}
+```{r echo = FALSE, message = FALSE}
 library(tidyverse)
 ```
 
-```{r}
+```{r echo = FALSE, message = FALSE}
 #get the data
 accidents <- as_tibble(read_csv("mvr-data.csv"))
 ```
 
-```{r}
+```{r echo = FALSE}
 #keep the traffic accidents
 traffacc <- accidents %>% 
   #separate Date of event; having months as observations might be useful.
@@ -22,10 +22,15 @@ traffacc <- accidents %>%
   filter(Event == "сообраќајна незгода")
 ```
 
-```{r}
-#On what type of roads traffic accidents happen and is it a crossroad?
+```{r echo = FALSE, eval = FALSE}
+#On what type of roads traffic accidents happen, and is it a crossroad?
 with(traffacc, table(TypeOfRoad, Crossroad))
+```
 
+## Каде се случуваат сообраќајните незгоди?
+
+```{r echo = FALSE}
+#plot roads and accidents
 traffacc %>% mutate(Crossroad2=case_when(Crossroad == "да" ~ "Да",
                                          Crossroad == "не" ~ "Не",
                                          is.na(Crossroad) ~ "Нема податок")) %>%
@@ -33,23 +38,42 @@ traffacc %>% mutate(Crossroad2=case_when(Crossroad == "да" ~ "Да",
     geom_bar(aes(fill=Crossroad2), width = 0.5) +
     scale_x_discrete(labels=c("Отворен", "Рурален", "Градски")) +
     theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
-    scale_fill_brewer() +
+    scale_fill_brewer(palette = "Paired") +
     labs(title="Сообраќајни незгоди на велосипедисти по видови на патишта и крстосници", 
             x = "Видови патишта", y = "Број на сообраќајни незгоди", fill = "Крстосница") 
-
+```
     
-
+```{r echo = FALSE, eval = FALSE}
 #Which months?
 with(traffacc, table(Month, Year))
+```
+
+```{r echo = FALSE, warning = FALSE}
+#new data sets for plot by age of persons
+veh1 <- traffacc %>% 
+  select(DateOfEvent, TypeOfRoad, ends_with("1")) %>% 
+  rename(Vehicle=Vehicle1, Age=AgeV1, Gender=GenderV1)
+
+veh2 <- traffacc %>% 
+  select(DateOfEvent, TypeOfRoad, ends_with("2")) %>% 
+  rename(Vehicle=Vehicle2, Age=AgeV2, Gender=GenderV2) %>% 
+  select(-TypeV2, -AlchoholV2)
 
 #plot the age of cyclists and drivers
+both_veh <- bind_rows(veh1, veh2)
+both_veh %>% filter(Vehicle %in% c("велосипед", "автомобил")) %>%
+ggplot(aes(x=Age, group=Vehicle, fill=Vehicle)) +
+  geom_histogram(position="dodge", binwidth = 5) +
+  scale_fill_brewer(palette = "Paired") +
+  labs(title = "Сообраќајни незгоди по возрасни групи", 
+       subtitle = "Дали повозрасните граѓани се почести жртви на сообраќајни незгоди 
+бидејќи повеќе возат велосипед или бидејќи имаат помалку рефлекси?",
+     x = "Возраст", y = "Број на сообраќајни незгоди", fill = "Превозно средство") 
 
+```
+
+```{r echo = FALSE}
 #Is there a correlation between roads and outcome; months and outcome; age of bycicle rider and outcome?
 
 
 ```
-
-
-
-
-
