@@ -29,6 +29,8 @@ with(traffacc, table(TypeOfRoad, Crossroad))
 
 ## Каде се случуваат сообраќајните незгоди?
 
+Значаен број на сообраќајни незгоди во кои страдаат велосипедисти се случуваат на отворен пат.
+
 ```{r echo = FALSE}
 #plot roads and accidents
 traffacc %>% mutate(Crossroad2=case_when(Crossroad == "да" ~ "Да",
