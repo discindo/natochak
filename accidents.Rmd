@@ -28,6 +28,9 @@ accidents <- as_tibble(read_csv("mvr-data.csv"))
 traffacc <- accidents %>% 
   #separate Date of event; having months as observations might be useful.
   separate(DateOfEvent, c("Day", "Month", "Year"), sep = "\\.", remove = FALSE) %>% 
+  #separate hours:mins, make numeric
+  separate(Hour, c("H", "M"), sep = "\\:", remove = FALSE) %>% 
+  mutate(Hours = as.numeric(H)) %>%
   #filter so we keep just the traffic accidents
   filter(Event == "сообраќајна незгода")
 ```
@@ -144,4 +147,16 @@ ggplot(traffacc, aes(x=AgeV1, group=Outcome, fill=Outcome)) +
 
 ```
  
+## Сообраќајни незгоди по часови
  
+```{r echo = FALSE, warning = FALSE}
+
+ggplot(traffacc, aes(x=Hours, group=Outcome, fill=Outcome)) +
+    geom_histogram(position="dodge", binwidth = 3) +
+    theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
+    scale_fill_brewer(palette = "Paired") +
+    labs(title="Вид на повреда од сообраќајни незгоди по час", 
+            x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на повреда") 
+
+#table(traffacc$Hours)
+```
