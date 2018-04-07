@@ -23,7 +23,7 @@ library(tidyverse)
 accidents <- as_tibble(read_csv("mvr-data.csv"))
 ```
 
-```{r echo = FALSE}
+```{r echo = FALSE, warning = FALSE}
 #keep the traffic accidents
 traffacc <- accidents %>% 
   #separate Date of event; having months as observations might be useful.
