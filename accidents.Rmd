@@ -211,3 +211,18 @@ ggplot(traffacc, aes(x=AgeV1, y=Hours, group=Outcome, fill=Outcome, colour=TypeO
   #geom_smooth(method=lm) +
   geom_point(pch=21, size=4, alpha=.8,  aes(fill=Outcome))
 ```
+```{r, eval=FALSE}
+# install.packages('ggmap')
+# install.packages('maps')
+# install.packages('mapdata')
+#install.packages("rworldmap")
+library(ggmap)
+library(rworldmap)
+
+globe <- getMap()
+mkd <- data.frame(globe@polygons[[104]]@Polygons[[1]]@coords)
+colnames(mkd) <- c("lon", "lat")
+ggplot(mkd, aes(x=lon, y=lat)) + coord_fixed(1.4) +
+  geom_polygon(color = "black", fill = "gray") +
+  theme_nothing()
+```
