@@ -200,7 +200,6 @@ ggplot(traffacc, aes(x=Hours, group=TypeOfRoad, fill=TypeOfRoad)) +
 ```{r}
 ggplot(traffacc, aes(x=AgeV1, y=Hours, group=Outcome, fill=Outcome, colour=TypeOfRoad)) +
   #geom_smooth(method=lm) +
-  #geom_density()
   geom_point(pch=21, size=4, alpha=.8,  aes(fill=Outcome))
 ```
 
