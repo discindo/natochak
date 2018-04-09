@@ -29,12 +29,12 @@ suppressPackageStartupMessages(library(lubridate))
 ### Идеи за понатаму
 Она што недостига, а што може да се додаде (со малку повеќе работа) се податоци за тоа дали на урбаните места каде што се случила незгода има тротоар или друга површина за велосипедска патека и дали е таа слободна (без паркирани возила). Слични податоци би можеле да се додадат и во однос на регионалните патишта каде што се случувале незгоди.
 
-```{r echo = FALSE, message = FALSE}
+```{r}
 #get the data
 accidents <- as_tibble(read_csv("mvr-data.csv"))
 ```
 
-```{r echo = FALSE, warning = FALSE}
+```{r}
 #keep the traffic accidents
 traffacc <- accidents %>%
   #separate Date of event; having months as observations might be useful.
@@ -46,18 +46,19 @@ traffacc <- accidents %>%
   filter(Event == "сообраќајна незгода")
 ```
 
-```{r echo = FALSE, eval = FALSE}
-#On what type of roads traffic accidents happen, and is it a crossroad?
-with(traffacc, table(TypeOfRoad, Crossroad))
-```
 
 ## Каде се случуваат сообраќајните незгоди?
 
+```{r}
+#On what type of roads traffic accidents happen, and is it a crossroad?
+with(traffacc, table(TypeOfRoad, Crossroad))
+knitr::kable(., caption="Сообраќајни незгоди по видови на патишта и крстосници")
+```
 Значаен број на сообраќајни незгоди во кои страдаат велосипедисти се случуваат на отворен пат. Ова отвора прашање за безбедност на отворените патишта: дали отворените патишта имаат простор на кој велосипеди можат да возат, или пак за сообраќајните незгоди се виновни возачите што возат по неприлагодена брзина?
 
 Во урбаните средини пак односот помеѓу незгоди на крстосница или не е 50:50. Дополнително би требало да се истражи дали на крстосниците има семафори, и дали всушност незгодите се имаат случено поради непочитување на сигнализацијата.
 
-```{r echo = FALSE}
+```{r}
 #plot roads and accidents
 traffacc %>% mutate(Crossroad2=case_when(Crossroad == "да" ~ "Да",
                                          Crossroad == "не" ~ "Не",
@@ -75,7 +76,7 @@ ggplot(aes(TypeOfRoad)) +
 
 Прашањето за неприлагодени брзини на возачите добива на значење и од податоците што велат дека отворените патишта се најсмртоносни за велосипедистите. Алтернативно толкување би било дека причината за смрт е долго чекање до медицинска помош на некој отворен пат. За жал податоци за колку време се пренесени повредените во болница нема.
 
-```{r echo = FALSE}
+```{r}
 
 #plot roads and type of outcomes
   ggplot(traffacc, aes(TypeOfRoad)) +
@@ -89,7 +90,7 @@ ggplot(aes(TypeOfRoad)) +
 ```
 
 
-```{r echo = FALSE, eval = FALSE}
+```{r eval = TRUE, results='hide'}
 #Which months?
 with(traffacc, table(Month, Year))
 ```
@@ -129,7 +130,7 @@ ggplot(aes(x=Age, group=Vehicle, fill=Vehicle)) +
 
 Сообраќајните незгоди завршуваат со смртни последици најмногу кај велосипедистите со над 60-тина години што многу веројатно се должи на нивното севкупно покревко здравје.
 
-```{r echo = FALSE, warning = FALSE}
+```{r}
 
 ggplot(traffacc, aes(x=AgeV1, group=Outcome, fill=Outcome)) +
   geom_histogram(position="dodge", binwidth = 15) +
@@ -140,7 +141,7 @@ ggplot(traffacc, aes(x=AgeV1, group=Outcome, fill=Outcome)) +
 
 ```
 
-```{r echo = FALSE, eval = FALSE}
+```{r results='hide'}
 #Is there a correlation between roads and outcome; months and outcome; age of bycicle rider and outcome?
 #chi2 tests for categorical variables
 tbl1<-with(traffacc, table(TypeOfRoad, Outcome))
