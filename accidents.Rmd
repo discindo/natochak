@@ -51,8 +51,8 @@ traffacc <- accidents %>%
 
 ```{r}
 #On what type of roads traffic accidents happen, and is it a crossroad?
-with(traffacc, table(TypeOfRoad, Crossroad))
-knitr::kable(., caption="Сообраќајни незгоди по видови на патишта и крстосници")
+tbl1 <- with(traffacc, table(TypeOfRoad, Crossroad))
+knitr::kable(tbl1, caption="Сообраќајни незгоди по видови на патишта и крстосници")
 ```
 Значаен број на сообраќајни незгоди во кои страдаат велосипедисти се случуваат на отворен пат. Ова отвора прашање за безбедност на отворените патишта: дали отворените патишта имаат простор на кој велосипеди можат да возат, или пак за сообраќајните незгоди се виновни возачите што возат по неприлагодена брзина?
 
