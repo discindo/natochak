@@ -151,7 +151,7 @@ tbl3 <- with(traffacc, table(Month, Outcome))
 chisq.test(tbl3, correct = F)
 
 tbl4 <- with(traffacc, table(AgeV1, Outcome))
-chisq.test(tbl4, correct = F)f
+chisq.test(tbl4, correct = F)
 ```
 
 
@@ -215,7 +215,7 @@ ggplot(traffacc, aes(x=AgeV1, y=Hours, group=Outcome, fill=Outcome, colour=TypeO
 # install.packages('ggmap')
 # install.packages('maps')
 # install.packages('mapdata')
-#install.packages("rworldmap")
+# install.packages("rworldmap")
 library(ggmap)
 library(rworldmap)
 
