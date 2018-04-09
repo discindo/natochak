@@ -145,13 +145,13 @@ ggplot(traffacc, aes(x=AgeV1, group=Outcome, fill=Outcome)) +
 #Is there a correlation between roads and outcome; months and outcome; age of bycicle rider and outcome?
 #chi2 tests for categorical variables
 tbl2 <- with(traffacc, table(TypeOfRoad, Outcome))
-chisq.test(tbl1, correct = F)
-
-tbl3 <- with(traffacc, table(Month, Outcome))
 chisq.test(tbl2, correct = F)
 
+tbl3 <- with(traffacc, table(Month, Outcome))
+chisq.test(tbl3, correct = F)
+
 tbl4 <- with(traffacc, table(AgeV1, Outcome))
-chisq.test(tbl3, correct = F)f
+chisq.test(tbl4, correct = F)f
 ```
 
 
