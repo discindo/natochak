@@ -49,7 +49,7 @@ traffacc <- accidents %>%
 
 ## Каде се случуваат сообраќајните незгоди?
 
-```{r}
+```{r results='hide'}
 #On what type of roads traffic accidents happen, and is it a crossroad?
 tbl1 <- with(traffacc, table(TypeOfRoad, Crossroad))
 knitr::kable(tbl1, caption="Сообраќајни незгоди по видови на патишта и крстосници")
@@ -144,13 +144,13 @@ ggplot(traffacc, aes(x=AgeV1, group=Outcome, fill=Outcome)) +
 ```{r results='hide'}
 #Is there a correlation between roads and outcome; months and outcome; age of bycicle rider and outcome?
 #chi2 tests for categorical variables
-tbl1<-with(traffacc, table(TypeOfRoad, Outcome))
+tbl2 <- with(traffacc, table(TypeOfRoad, Outcome))
 chisq.test(tbl1, correct = F)
 
-tbl2 <- with(traffacc, table(Month, Outcome))
+tbl3 <- with(traffacc, table(Month, Outcome))
 chisq.test(tbl2, correct = F)
 
-tbl3 <- with(traffacc, table(AgeV1, Outcome))
+tbl4 <- with(traffacc, table(AgeV1, Outcome))
 chisq.test(tbl3, correct = F)f
 ```
 
