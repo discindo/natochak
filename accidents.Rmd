@@ -212,10 +212,9 @@ ggplot(traffacc, aes(x=AgeV1, y=Hours, group=Outcome, fill=Outcome, colour=TypeO
   geom_point(pch=21, size=4, alpha=.8,  aes(fill=Outcome))
 ```
 ```{r, eval=FALSE}
-# install.packages('ggmap')
-# install.packages('maps')
-# install.packages('mapdata')
-# install.packages("rworldmap")
+# maybe try to map accidents to regions
+# https://stackoverflow.com/questions/17723822/administrative-regions-map-of-a-country-with-ggmap-and-ggplot2
+# https://www.gadm.org/maps/MKD.html
 library(ggmap)
 library(rworldmap)
 
