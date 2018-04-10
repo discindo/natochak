@@ -176,7 +176,7 @@ chisq.test(tbl4, correct = F)
 
 ```{r echo = FALSE}
 
-#plot months and type of outcomesF
+#plot months and type of outcomes
   ggplot(traffacc, aes(Month)) +
     geom_bar(aes(fill=Outcome), width = 0.5) +
     theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
@@ -190,7 +190,7 @@ ggplot(traffacc, aes(Month)) +
   geom_bar(aes(fill=TypeOfRoad), width = 0.5) +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
-  labs(title="Вид на повреда од сообраќајни незгоди по месеци",
+  labs(title="Патишта сообраќајни незгоди по месеци",
           x = "Месеци", y = "Број на сообраќајни незгоди", fill = "Вид на пат")
 ```
 
