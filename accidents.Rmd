@@ -2,7 +2,8 @@
 title: "На точак: дополнета анализа од билтени на МВР за сообраќајните незгоди во кои страдаат велосипедисти"
 output:
   html_document:
-    toc: TRUE
+    toc: true
+    fig_cap: true
     df_print: paged
 ---
 
@@ -15,6 +16,7 @@ knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE, cache=TRUE)
 ```{r}
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(patchwork))
 ```
 
 ## Вовед
@@ -65,7 +67,7 @@ traffacc <- traffacc %>%
 
 Генералниот визуелен приказ на жртвите во сообраќајните незгоди изгледа отрпилика вака:
 
-```{r}
+```{r, fig.width=12}
 ggplot(traffacc, aes(x=AgeV1, y=TimeHM, fill = Outcome)) +
   geom_point(size = 3, alpha = 0.9, pch=21) +
   scale_fill_brewer(name="Вид на повреда", palette = "Paired") +
@@ -189,68 +191,76 @@ chisq.test(tbl4, correct = F)
 
 Повредите на велосипедистите најмногу се случуваат во летните месеци и забележителен е пораст на незгоди на отворените патишта во летниот период. Ова може да значи дека определена група на граѓани во летниот период користат повеќе велосипед како основно превозно средство, или пак дека отоврените патишта имаат повеќе автомобилски сообраќај поради летувања и слично -- што на крај резултира со повеќе сообраќајни незгоди на нив.
 
-```{r echo = FALSE}
+```{r,  echo = FALSE, fig.width=10}
 
 #plot months and type of outcomes
-  ggplot(traffacc, aes(Month)) +
+p1 <- ggplot(traffacc, aes(Month)) +
     geom_bar(aes(fill=Outcome), width = 0.5) +
     theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
     scale_fill_brewer(palette = "Paired") +
+  theme(legend.position="top") +
     labs(title="Вид на повреда од сообраќајни незгоди по месеци",
             x = "Месеци", y = "Број на сообраќајни незгоди", fill = "Вид на повреда")
 
 
 #plot months and roads
-ggplot(traffacc, aes(Month)) +
+p2 <- ggplot(traffacc, aes(Month)) +
   geom_bar(aes(fill=TypeOfRoad), width = 0.5) +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
+  theme(legend.position="top") +
   labs(title="Патишта сообраќајни незгоди по месеци",
           x = "Месеци", y = "Број на сообраќајни незгоди", fill = "Вид на пат")
+p1 +p2
 ```
 
 ## Сообраќајни незгоди по часови и вид на повреда на велосипедистите и вид на патишта
 
 Споредувањето на сообраќајните незгоди по час во денот и тип на пат укажува дека најголем дел тешки повреди се случуваат во урбаните средини во попладневните часови. Дали ова се должи на заморот кај двете групи возачи по долг работен ден, нервозата во сообраќајните гужви (барем за Скопје?) или нешто трето, останува да се истражува.
 
-```{r echo = FALSE, warning = FALSE, eval=FALSE}
+```{r echo = FALSE, warning = FALSE, eval=FALSE, fig.width=10}
 
-ggplot(traffacc, aes(x=Hours, group=Outcome, fill=Outcome)) +
+p1 <- ggplot(traffacc, aes(x=Hours, group=Outcome, fill=Outcome)) +
   geom_histogram(position="dodge", binwidth = 3) +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
+  theme(legend.position="top") +
   labs(title="Вид на повреда од сообраќајни незгоди по час",
           x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на повреда")
 
-ggplot(traffacc, aes(x=Hours, group=TypeOfRoad, fill=TypeOfRoad)) +
+p2 <- ggplot(traffacc, aes(x=Hours, group=TypeOfRoad, fill=TypeOfRoad)) +
   geom_histogram(position="dodge", binwidth = 3) +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
+  theme(legend.position="top") +
   labs(title="Патишта на сообраќајни незгоди по час",
           x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на пат") 
   
-
+p1 + p2
 #table(traffacc$Hours)
 ```
 
 
-```{r}
+```{r, fig.width=10}
 # with time as time on x axis
-ggplot(traffacc, aes(x=TimeHM, group=Outcome, fill=Outcome)) +
+p1 <- ggplot(traffacc, aes(x=TimeHM, group=Outcome, fill=Outcome)) +
   geom_histogram(position="dodge", colour="white", bins = 8) +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
   scale_x_time()+
+  theme(legend.position="top") +
   labs(title="Вид на повреда од сообраќајни незгоди по час", 
           x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на повреда") 
 
-ggplot(traffacc, aes(x=TimeHM, group=TypeOfRoadMK, fill=TypeOfRoadMK)) +
+p2 <- ggplot(traffacc, aes(x=TimeHM, group=TypeOfRoadMK, fill=TypeOfRoadMK)) +
   geom_histogram(position="dodge", colour="white", bins = 8) +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
   scale_x_time()+
+  theme(legend.position="top") +
   labs(title="Патишта на сообраќајни незгоди по час", 
        x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на пат") 
+p1 + p2 
 ```
 
 
