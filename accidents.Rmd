@@ -97,7 +97,7 @@ traffacc %>% mutate(Crossroad2=case_when(Crossroad == "да" ~ "Да",
                                          Crossroad == "не" ~ "Не",
                                          is.na(Crossroad) ~ "Нема податок")) %>%
 ggplot(aes(TypeOfRoad)) +
-  geom_bar(aes(fill=Crossroad2), width = 0.5) +
+  geom_bar(aes(fill=Crossroad2), width = 0.5, colour="white") +
   scale_x_discrete(labels=c("Отворен", "Рурален", "Градски")) +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
@@ -113,7 +113,7 @@ ggplot(aes(TypeOfRoad)) +
 
 #plot roads and type of outcomes
   ggplot(traffacc, aes(TypeOfRoad)) +
-    geom_bar(aes(fill=Outcome), width = 0.5) +
+    geom_bar(aes(fill=Outcome), width = 0.5, colour="white") +
     scale_x_discrete(labels=c("Отворен", "Рурален", "Градски")) +
     theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
     scale_fill_brewer(palette = "Paired") +
@@ -150,7 +150,7 @@ veh2 <- traffacc %>%
 both_veh <- bind_rows(veh1, veh2)
 both_veh %>% filter(Vehicle %in% c("велосипед", "автомобил")) %>%
 ggplot(aes(x=Age, group=Vehicle, fill=Vehicle)) +
-  geom_histogram(position="dodge", binwidth = 5) +
+  geom_histogram(position="dodge", binwidth = 5, colour="white") +
   scale_fill_brewer(palette = "Paired") +
   labs(title = "Сообраќајни незгоди по старосни групи",
        subtitle = "Дали повозрасните граѓани се почести жртви на сообраќајни незгоди
@@ -166,7 +166,7 @@ ggplot(aes(x=Age, group=Vehicle, fill=Vehicle)) +
 ```{r}
 
 ggplot(traffacc, aes(x=AgeV1, group=Outcome, fill=Outcome)) +
-  geom_histogram(position="dodge", binwidth = 15) +
+  geom_histogram(position="dodge", binwidth = 15, colour="white") +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
   labs(title="Вид на повреда од сообраќајни незгоди по старосни групи",
@@ -195,7 +195,7 @@ chisq.test(tbl4, correct = F)
 
 #plot months and type of outcomes
 p1 <- ggplot(traffacc, aes(Month)) +
-    geom_bar(aes(fill=Outcome), width = 0.5) +
+    geom_bar(aes(fill=Outcome), width = 0.5, colour="white") +
     theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
     scale_fill_brewer(palette = "Paired") +
   theme(legend.position="top") +
@@ -205,7 +205,7 @@ p1 <- ggplot(traffacc, aes(Month)) +
 
 #plot months and roads
 p2 <- ggplot(traffacc, aes(Month)) +
-  geom_bar(aes(fill=TypeOfRoad), width = 0.5) +
+  geom_bar(aes(fill=TypeOfRoadMK), width = 0.5, colour="white") +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
   theme(legend.position="top") +
@@ -221,7 +221,7 @@ p1 +p2
 ```{r echo = FALSE, warning = FALSE, eval=FALSE, fig.width=10}
 
 p1 <- ggplot(traffacc, aes(x=Hours, group=Outcome, fill=Outcome)) +
-  geom_histogram(position="dodge", binwidth = 3) +
+  geom_histogram(position="dodge", binwidth = 3, colour="white") +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
   theme(legend.position="top") +
@@ -229,7 +229,7 @@ p1 <- ggplot(traffacc, aes(x=Hours, group=Outcome, fill=Outcome)) +
           x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на повреда")
 
 p2 <- ggplot(traffacc, aes(x=Hours, group=TypeOfRoad, fill=TypeOfRoad)) +
-  geom_histogram(position="dodge", binwidth = 3) +
+  geom_histogram(position="dodge", binwidth = 3, colour="white") +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
   theme(legend.position="top") +
