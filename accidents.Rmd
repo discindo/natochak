@@ -2,7 +2,8 @@
 title: "На точак: дополнета анализа од билтени на МВР за сообраќајните незгоди во кои страдаат велосипедисти"
 output:
   html_document:
-    toc: TRUE
+    toc: true
+    fig_cap: true
     df_print: paged
 ---
 
@@ -15,19 +16,22 @@ knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE, cache=TRUE)
 ```{r}
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(patchwork))
 ```
 
 ## Вовед
 
-На крајот на март 2018 година иницијативата На Точак објави некои [статистики](https://natochak.blogspot.mk/2018/03/blog-post_1.html) за сообраќајните незгоди во Македонија што вклучуваат велосипедисти. Оваа презентација оди чекор понатаму со тоа што додава повеќе податоци за анализа и можеби отркива некои трендови (patterns?) по кои што се случуваат незгодите. Презентацијата подолу се фокусира само на незгодите, пред се автомобил/велосипед. Други инциденти, како што е на пример напад од куче, не се вклучени.
+На крајот на март 2018 година иницијативата На Точак објави [статистики](https://natochak.blogspot.mk/2018/03/blog-post_1.html) за сообраќајните незгоди во Македонија што вклучуваат велосипедисти. Оваа презентација оди чекор понатаму со тоа што додава повеќе податоци за анализа и можеби отркива некои трендови (patterns?) по кои што се случуваат незгодите. Презентацијата подолу се фокусира само на сообраќајни незгоди, пред се автомобил/велосипед. Други инциденти, како што е на пример напад од куче, не се вклучени.
 
 ### Зголемувањето на бројот на податоци
-Оригиналнииот датасет од НаТочак имаше седум променливи. Но, билтените на МВР кријат уште променливи во нив. Затоа во новиот датасет [достапен на github](https://github.com/novica/natochak/) додадовме уште осум (или девет) променливи. Некои од нив имаат многу малку обсервации, но сепак даваат подобра слика за податоците со кои што (може) да се располага. На пример, во сите билтени од МВР многу малку се спомнува дали возачот на моторното возило бил под дејство на алкохол (само три пати). Не знаеме дали ова се должи на непотполно објавени информации во веб-билтените или пак на навистина низок број на возачи под дејство на алкохол.
+Оригиналнииот датасет од НаТочак имаше седум променливи. Но, билтените на МВР кријат уште променливи во нив. Затоа во новиот датасет [достапен на github](https://github.com/novica/natochak/) додадовме уште осум (или девет) променливи. Некои од нив имаат многу малку податоци, но сепак ја подобруваат сликата за податоците со кои што (може) да се располага. На пример, во сите билтени од МВР многу малку се спомнува дали возачот на моторното возило или велосипедот бил под дејство на алкохол (само три пати). Не знаеме дали ова се должи на непотполно објавени информации во веб-билтените или пак на навистина низок број на возачи или велосипедисти под дејство на алкохол.
 
-Некои променливи ги променивме. На пример, во промелнивата за патот каде се случила незгодата додадовме „отворен пат“, покрај „урбан“ и „рурален“. Понатаму, за побрза работа со R направивме и некои трансформации за месеците во кои се случени како и средствата со кои се извршени незгодите.
+Некои променливи ги променивме. На пример, во промелнивата за патот каде се случила незгодата додадовме „отворен пат“, покрај „градски“ и „селски“. Понатаму, за побрза работа во статистичката средина `R` направивме и некои трансформации за месеците во кои се случени незгодите како и водовите возила кои биле вклучени во незгодите.
 
 ### Идеи за понатаму
-Она што недостига, а што може да се додаде (со малку повеќе работа) се податоци за тоа дали на урбаните места каде што се случила незгода има тротоар или друга површина за велосипедска патека и дали е таа слободна (без паркирани возила). Слични податоци би можеле да се додадат и во однос на регионалните патишта каде што се случувале незгоди.
+Она што недостига, а што може да се додаде (со малку повеќе работа) се податоци за тоа дали на урбаните места каде што се случила незгода има тротоар или друга површина за велосипедска патека и дали е таа слободна (без паркирани возила). Слични податоци би можеле да се додадат и во однос на регионалните патишта каде што се случувале незгоди. Претпоставката е дека достапноста на велосипедска површина би го намалила бројот на незгодите, па од тие причини, ваква променлива би додала многу во насока на безбедноста на сите вклучени во сообраќајот. 
+
+Други компоненти од интерес се некаква проценка за фрекфенцијата на моторни и велосипедски сообраќај на делниците и опкружувањето на делниците каде се случиле незгодите. Со вакви податоци би можеле да провериме дали патишта на кои од разни причини има повеќе велосипедисти--можеби затоа што се блиску до училишта, игралишта, паркови, или пазари--се повеќе ризични за сообраќајни незгоди. Особено имајќи во предвид, како што ќе видиме подоле, дека лица од најмладите и најстарите старосни групи почесто возат точак и почесто се вклучени во сообраќајни незгоди.
 
 ```{r}
 #get the data
@@ -43,18 +47,35 @@ traffacc <- accidents %>%
   separate(Hour, c("H", "M"), sep = "\\:", remove = FALSE) %>%
   mutate(Hours = as.numeric(H)) %>%
   #filter so we keep just the traffic accidents
-  filter(Event == "сообраќајна незгода")
+  filter(Event == "сообраќајна незгода") %>% 
+  mutate()
 ```
 
+
+```{r}
+# time as time!
+traffacc <- traffacc %>% 
+  mutate(DateTime= parse_date_time(paste(DateOfEvent, Hour, sep=" "), orders="dmy HM")) %>% 
+  mutate(TimeHM=parse_time(x = Hour, format="%H:%M")) %>%
+  mutate(TimeH=hour(x = DateTime)) %>% 
+  mutate(TypeOfRoadMK=case_when(
+    TypeOfRoad == 'Open'  ~ 'Отворен',
+    TypeOfRoad == 'Rural' ~ 'Селски',
+    TypeOfRoad == 'Urban' ~ 'Градски'
+  ))
+```
 
 ## Преглед на сообраќајни незгодии по возраст на велосипедист и час кога се случила, групирани по исход и вид на пат
 
 Генералниот визуелен приказ на жртвите во сообраќајните незгоди изгледа отрпилика вака:
 
-```{r}
-ggplot(traffacc, aes(x=AgeV1, y=Hours, color = Outcome, shape = TypeOfRoad)) +
-  geom_point(size = 3, alpha = 0.7) +
-  scale_fill_brewer(palette = "Paired") +
+```{r, fig.width=10}
+ggplot(traffacc, aes(x=AgeV1, y=TimeHM, fill = Outcome)) +
+  geom_point(size = 3, alpha = 0.9, pch=21) +
+  scale_fill_brewer(name="Вид на повреда", palette = "Paired") +
+  facet_wrap("TypeOfRoadMK", ncol=3) +
+  theme(legend.position="top") +
+  scale_y_time() +
   labs(title="Сообраќајни незгоди по години на велосипедист и час во денот",
           x = "Возраст на велосипедист", y = "Час од денот во кој е случена незгода")
 ```
@@ -78,7 +99,7 @@ traffacc %>% mutate(Crossroad2=case_when(Crossroad == "да" ~ "Да",
                                          Crossroad == "не" ~ "Не",
                                          is.na(Crossroad) ~ "Нема податок")) %>%
 ggplot(aes(TypeOfRoad)) +
-  geom_bar(aes(fill=Crossroad2), width = 0.5) +
+  geom_bar(aes(fill=Crossroad2), width = 0.5, colour="white") +
   scale_x_discrete(labels=c("Отворен", "Рурален", "Градски")) +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
@@ -94,7 +115,7 @@ ggplot(aes(TypeOfRoad)) +
 
 #plot roads and type of outcomes
   ggplot(traffacc, aes(TypeOfRoad)) +
-    geom_bar(aes(fill=Outcome), width = 0.5) +
+    geom_bar(aes(fill=Outcome), width = 0.5, colour="white") +
     scale_x_discrete(labels=c("Отворен", "Рурален", "Градски")) +
     theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
     scale_fill_brewer(palette = "Paired") +
@@ -131,7 +152,7 @@ veh2 <- traffacc %>%
 both_veh <- bind_rows(veh1, veh2)
 both_veh %>% filter(Vehicle %in% c("велосипед", "автомобил")) %>%
 ggplot(aes(x=Age, group=Vehicle, fill=Vehicle)) +
-  geom_histogram(position="dodge", binwidth = 5) +
+  geom_histogram(position="dodge", binwidth = 5, colour="white") +
   scale_fill_brewer(palette = "Paired") +
   labs(title = "Сообраќајни незгоди по старосни групи",
        subtitle = "Дали повозрасните граѓани се почести жртви на сообраќајни незгоди
@@ -147,7 +168,7 @@ ggplot(aes(x=Age, group=Vehicle, fill=Vehicle)) +
 ```{r}
 
 ggplot(traffacc, aes(x=AgeV1, group=Outcome, fill=Outcome)) +
-  geom_histogram(position="dodge", binwidth = 15) +
+  geom_histogram(position="dodge", binwidth = 15, colour="white") +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
   labs(title="Вид на повреда од сообраќајни незгоди по старосни групи",
@@ -168,57 +189,81 @@ tbl4 <- with(traffacc, table(AgeV1, Outcome))
 chisq.test(tbl4, correct = F)
 ```
 
-
-
 ## Сообраќајни незгоди по месеци и вид на повреда на велосипедистите и вид на патишта
 
 Повредите на велосипедистите најмногу се случуваат во летните месеци и забележителен е пораст на незгоди на отворените патишта во летниот период. Ова може да значи дека определена група на граѓани во летниот период користат повеќе велосипед како основно превозно средство, или пак дека отоврените патишта имаат повеќе автомобилски сообраќај поради летувања и слично -- што на крај резултира со повеќе сообраќајни незгоди на нив.
 
-```{r echo = FALSE}
+```{r,  echo = FALSE, fig.width=10}
 
 #plot months and type of outcomes
-  ggplot(traffacc, aes(Month)) +
-    geom_bar(aes(fill=Outcome), width = 0.5) +
+p1 <- ggplot(traffacc, aes(Month)) +
+    geom_bar(aes(fill=Outcome), width = 0.5, colour="white") +
     theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
     scale_fill_brewer(palette = "Paired") +
+  theme(legend.position="top") +
     labs(title="Вид на повреда од сообраќајни незгоди по месеци",
             x = "Месеци", y = "Број на сообраќајни незгоди", fill = "Вид на повреда")
 
 
 #plot months and roads
-ggplot(traffacc, aes(Month)) +
-  geom_bar(aes(fill=TypeOfRoad), width = 0.5) +
+p2 <- ggplot(traffacc, aes(Month)) +
+  geom_bar(aes(fill=TypeOfRoadMK), width = 0.5, colour="white") +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
+  theme(legend.position="top") +
   labs(title="Патишта сообраќајни незгоди по месеци",
           x = "Месеци", y = "Број на сообраќајни незгоди", fill = "Вид на пат")
+p1 +p2
 ```
-
 
 ## Сообраќајни незгоди по часови и вид на повреда на велосипедистите и вид на патишта
 
 Споредувањето на сообраќајните незгоди по час во денот и тип на пат укажува дека најголем дел тешки повреди се случуваат во урбаните средини во попладневните часови. Дали ова се должи на заморот кај двете групи возачи по долг работен ден, нервозата во сообраќајните гужви (барем за Скопје?) или нешто трето, останува да се истражува.
 
-```{r echo = FALSE, warning = FALSE}
+```{r echo = FALSE, warning = FALSE, eval=FALSE, fig.width=10}
 
-ggplot(traffacc, aes(x=Hours, group=Outcome, fill=Outcome)) +
-  geom_histogram(position="dodge", binwidth = 3) +
+p1 <- ggplot(traffacc, aes(x=Hours, group=Outcome, fill=Outcome)) +
+  geom_histogram(position="dodge", binwidth = 3, colour="white") +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
+  theme(legend.position="top") +
   labs(title="Вид на повреда од сообраќајни незгоди по час",
           x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на повреда")
 
-ggplot(traffacc, aes(x=Hours, group=TypeOfRoad, fill=TypeOfRoad)) +
-  geom_histogram(position="dodge", binwidth = 3) +
+p2 <- ggplot(traffacc, aes(x=Hours, group=TypeOfRoad, fill=TypeOfRoad)) +
+  geom_histogram(position="dodge", binwidth = 3, colour="white") +
   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
   scale_fill_brewer(palette = "Paired") +
+  theme(legend.position="top") +
   labs(title="Патишта на сообраќајни незгоди по час",
           x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на пат") 
   
-
+p1 + p2
 #table(traffacc$Hours)
 ```
 
+
+```{r, fig.width=10}
+# with time as time on x axis
+p1 <- ggplot(traffacc, aes(x=TimeHM, group=Outcome, fill=Outcome)) +
+  geom_histogram(position="dodge", colour="white", bins = 8) +
+  theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
+  scale_fill_brewer(palette = "Paired") +
+  scale_x_time()+
+  theme(legend.position="top") +
+  labs(title="Вид на повреда од сообраќајни незгоди по час", 
+          x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на повреда") 
+
+p2 <- ggplot(traffacc, aes(x=TimeHM, group=TypeOfRoadMK, fill=TypeOfRoadMK)) +
+  geom_histogram(position="dodge", colour="white", bins = 8) +
+  theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
+  scale_fill_brewer(palette = "Paired") +
+  scale_x_time()+
+  theme(legend.position="top") +
+  labs(title="Патишта на сообраќајни незгоди по час", 
+       x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на пат") 
+p1 + p2 
+```
 
 
 ## ...
