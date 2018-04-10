@@ -43,18 +43,35 @@ traffacc <- accidents %>%
   separate(Hour, c("H", "M"), sep = "\\:", remove = FALSE) %>%
   mutate(Hours = as.numeric(H)) %>%
   #filter so we keep just the traffic accidents
-  filter(Event == "сообраќајна незгода")
+  filter(Event == "сообраќајна незгода") %>% 
+  mutate()
 ```
 
+
+```{r}
+# time as time!
+traffacc <- traffacc %>% 
+  mutate(DateTime= parse_date_time(paste(DateOfEvent, Hour, sep=" "), orders="dmy HM")) %>% 
+  mutate(TimeHM=parse_time(x = Hour, format="%H:%M")) %>%
+  mutate(TimeH=hour(x = DateTime)) %>% 
+  mutate(TypeOfRoadMK=case_when(
+    TypeOfRoad == 'Open'  ~ 'Отворен',
+    TypeOfRoad == 'Rural' ~ 'Селски',
+    TypeOfRoad == 'Urban' ~ 'Градски'
+  ))
+```
 
 ## Преглед на сообраќајни незгодии по возраст на велосипедист и час кога се случила, групирани по исход и вид на пат
 
 Генералниот визуелен приказ на жртвите во сообраќајните незгоди изгледа отрпилика вака:
 
 ```{r}
-ggplot(traffacc, aes(x=AgeV1, y=Hours, color = Outcome, shape = TypeOfRoad)) +
-  geom_point(size = 3, alpha = 0.7) +
-  scale_fill_brewer(palette = "Paired") +
+ggplot(traffacc, aes(x=AgeV1, y=TimeHM, fill = Outcome)) +
+  geom_point(size = 3, alpha = 0.9, pch=21) +
+  scale_fill_brewer(name="Вид на повреда", palette = "Paired") +
+  facet_wrap("TypeOfRoadMK", ncol=3) +
+  theme(legend.position="top") +
+  scale_y_time() +
   labs(title="Сообраќајни незгоди по години на велосипедист и час во денот",
           x = "Возраст на велосипедист", y = "Час од денот во кој е случена незгода")
 ```
@@ -168,8 +185,6 @@ tbl4 <- with(traffacc, table(AgeV1, Outcome))
 chisq.test(tbl4, correct = F)
 ```
 
-
-
 ## Сообраќајни незгоди по месеци и вид на повреда на велосипедистите и вид на патишта
 
 Повредите на велосипедистите најмногу се случуваат во летните месеци и забележителен е пораст на незгоди на отворените патишта во летниот период. Ова може да значи дека определена група на граѓани во летниот период користат повеќе велосипед како основно превозно средство, или пак дека отоврените патишта имаат повеќе автомобилски сообраќај поради летувања и слично -- што на крај резултира со повеќе сообраќајни незгоди на нив.
@@ -194,12 +209,11 @@ ggplot(traffacc, aes(Month)) +
           x = "Месеци", y = "Број на сообраќајни незгоди", fill = "Вид на пат")
 ```
 
-
 ## Сообраќајни незгоди по часови и вид на повреда на велосипедистите и вид на патишта
 
 Споредувањето на сообраќајните незгоди по час во денот и тип на пат укажува дека најголем дел тешки повреди се случуваат во урбаните средини во попладневните часови. Дали ова се должи на заморот кај двете групи возачи по долг работен ден, нервозата во сообраќајните гужви (барем за Скопје?) или нешто трето, останува да се истражува.
 
-```{r echo = FALSE, warning = FALSE}
+```{r echo = FALSE, warning = FALSE, eval=FALSE}
 
 ggplot(traffacc, aes(x=Hours, group=Outcome, fill=Outcome)) +
   geom_histogram(position="dodge", binwidth = 3) +
@@ -219,6 +233,25 @@ ggplot(traffacc, aes(x=Hours, group=TypeOfRoad, fill=TypeOfRoad)) +
 #table(traffacc$Hours)
 ```
 
+
+```{r}
+# with time as time on x axis
+ggplot(traffacc, aes(x=TimeHM, group=Outcome, fill=Outcome)) +
+  geom_histogram(position="dodge", colour="white", bins = 8) +
+  theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
+  scale_fill_brewer(palette = "Paired") +
+  scale_x_time()+
+  labs(title="Вид на повреда од сообраќајни незгоди по час", 
+          x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на повреда") 
+
+ggplot(traffacc, aes(x=TimeHM, group=TypeOfRoadMK, fill=TypeOfRoadMK)) +
+  geom_histogram(position="dodge", colour="white", bins = 8) +
+  theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
+  scale_fill_brewer(palette = "Paired") +
+  scale_x_time()+
+  labs(title="Патишта на сообраќајни незгоди по час", 
+       x = "Час", y = "Број на сообраќајни незгоди", fill = "Вид на пат") 
+```
 
 
 ## ...
