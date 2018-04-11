@@ -276,6 +276,14 @@ p1 + p2
 # https://www.gadm.org/maps/MKD.html
 library(ggmap)
 library(rworldmap)
+library(rgdal)
+
+# Data from the Global Administrative Areas
+# 1) Read in administrative area level 2 data
+mak.adm.spdf <- readOGR("MKD_adm_shp", "MAK_adm", verbose = TRUE, stringsAsFactors = FALSE)
+
+load("MKD_adm0.shp")
+pakistan.adm2.spdf <- get("gadm")
 
 globe <- getMap()
 mkd <- data.frame(globe@polygons[[104]]@Polygons[[1]]@coords)
