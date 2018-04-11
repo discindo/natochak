@@ -48,7 +48,7 @@ traffacc <- accidents %>%
   mutate(Hours = as.numeric(H)) %>%
   #filter so we keep just the traffic accidents
   filter(Event == "сообраќајна незгода") %>% 
-  mutate(Outcome = factor(Outcome, levels = c("непознато", "повреда", "тешка повреда", "животна опасност", "смрт")))
+  mutate(Outcome = ordered(Outcome, levels = c("непознато", "повреда", "тешка повреда", "животна опасност", "смрт")))
 ```
 
 
