@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE, cache=TRUE)
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(lubridate))
 suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(viridis))
 ```
 
 ## Вовед
@@ -70,12 +71,14 @@ traffacc <- traffacc %>%
 Генералниот визуелен приказ на жртвите во сообраќајните незгоди изгледа отрпилика вака:
 
 ```{r, fig.width=10}
-ggplot(traffacc, aes(x=AgeV1, y=TimeHM, fill = Outcome)) +
+ggplot(traffacc, aes(x=AgeV1, y=TimeHM, fill = Outcome, ordered = TRUE)) +
   geom_point(size = 3, alpha = 0.9, pch=21) +
-  scale_fill_brewer(name="Вид на повреда", palette = "Paired") +
+  #scale_fill_brewer(name="Вид на повреда", type=seq, palette = "OrRd") +
+  scale_color_viridis(name="Вид на повреда", discrete = TRUE, option = "D") +
   facet_wrap("TypeOfRoadMK", ncol=3) +
   theme(legend.position="top") +
   scale_y_time() +
+  #scale_y_time(sec.axis = dup_axis()) +
   labs(title="Сообраќајни незгоди по години на велосипедист и час во денот",
           x = "Возраст на велосипедист", y = "Час од денот во кој е случена незгода")
 ```
