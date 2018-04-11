@@ -268,23 +268,34 @@ p2 <- ggplot(traffacc, aes(x=TimeHM, group=TypeOfRoadMK, fill=TypeOfRoadMK)) +
 p1 + p2 
 ```
 
+```{r, eval = FALSE}
+library(raster)
+#get spatial data for Macedonia from GADM (but don't download every time)
+MKD.adm1.spdf <- 
+  getData(
+    "GADM"
+    , country = "Macedonia"
+    , level = 1
+  )
+```
+
 
 ## ...
 ```{r, eval=FALSE}
-# maybe try to map accidents to regions
-# https://stackoverflow.com/questions/17723822/administrative-regions-map-of-a-country-with-ggmap-and-ggplot2
-# https://www.gadm.org/maps/MKD.html
-library(ggmap)
-library(rworldmap)
+# map accidents to regions/municipalities
+# every town is a municipality 
+# just add municipalities for villages (start with 'с.')
 library(rgdal)
 
-# Data from the Global Administrative Areas
-# 1) Read in administrative area level 2 data
-mak.adm.spdf <- readOGR("MKD_adm_shp", "MAK_adm", verbose = TRUE, stringsAsFactors = FALSE)
+# Read in administrative area level data
+#https://stackoverflow.com/questions/17723822/administrative-regions-map-of-a-country-with-ggmap-and-ggplot2
+load("MKD.adm1.spdf.RData")
+MKD.adm1.spdf <- get("gadm")
 
-load("MKD_adm0.shp")
-pakistan.adm2.spdf <- get("gadm")
 
+#obsolete?
+library(ggmap)
+library(rworldmap)
 globe <- getMap()
 mkd <- data.frame(globe@polygons[[104]]@Polygons[[1]]@coords)
 colnames(mkd) <- c("lon", "lat")
