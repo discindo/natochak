@@ -118,7 +118,7 @@ ggplot(aes(TypeOfRoad)) +
 
 #plot roads and type of outcomes
   ggplot(traffacc, aes(TypeOfRoad)) +
-    geom_bar(aes(fill=Outcome), width = 0.5, colour="white") +
+    geom_bar(aes(fill=Outcome), width = 0.5, colour="white", ordered = TRUE) +
     scale_x_discrete(labels=c("Отворен", "Рурален", "Градски")) +
     theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) +
     scale_fill_brewer(palette = "Paired") +
