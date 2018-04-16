@@ -57,8 +57,15 @@ traffacc <- accidents %>%
   mutate(Hours = as.numeric(H)) %>%
   #filter so we keep just the traffic accidents
   filter(Event == "сообраќајна незгода") %>% 
-  mutate(Outcome = ordered(Outcome, levels = c("непознато", "повреда", "тешка повреда", "животна опасност", "смрт"))) %>% 
-  mutate(Mun2=ifelse(is.na(Mun), Place, Mun))
+  mutate(Outcome = ordered(Outcome, levels = c("непознато", "повреда", "тешка повреда", "животна опасност", "смрт")))
+```
+
+```{r}
+#deal with the municipalities
+traffacc <- traffacc %>% 
+  mutate(Mun2=ifelse(is.na(Mun), Place, Mun)) %>%
+  mutate(MunLatin = stringi::stri_trans_general(Mun2, 'latin'))
+#todo group spatial data into for skopje into one Mun
 ```
 
 
