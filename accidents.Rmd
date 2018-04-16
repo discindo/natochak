@@ -45,7 +45,6 @@ suppressPackageStartupMessages(library(ggrepel))
 ```{r}
 #get the data
 accidents <- as_tibble(read_csv("mvr-data.csv"))
-accidents$Mun[accidents$Mun=='Стурга'] <- "Струга"
 ```
 
 ```{r}
