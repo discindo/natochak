@@ -291,7 +291,7 @@ suppressPackageStartupMessages(library(rgeos))
 ```
 
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 #get spatial data for Macedonia from GADM (but don't download every time)
 MKD.adm1.spdf <- 
   getData(
@@ -303,7 +303,7 @@ MKD.adm1.spdf <-
 
 
 ## ...
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # map accidents to regions/municipalities
 # every town is a municipality 
 # just add municipalities for villages (start with 'с.')
@@ -318,47 +318,33 @@ mkop.centroids.df[, 'ID_2'] <- mkop@data[,'ID_1']
 mkop.centroids.df[, 'NAME_2'] <- mkop@data[,'NAME_1']
 ```
 
-```{r, eval=TRUE, fig.width=10}
-unemployment.df <- data.frame(id= unique(mkop.df[,'id']),
-                              unemployment = runif(n = length(unique(mkop.df[,'id'])), min = 0, max = 25))
-mkop.df2 <- merge(mkop.df, unemployment.df, by.y = 'id', all.x = TRUE)
-
-# join the accidents and municipality tables
-ggplot(mkop.df2, aes(x = long, y = lat, group = group)) + 
-  geom_polygon(aes(fill = cut(unemployment,5))) +
-  geom_label_repel(data = mkop.centroids.df, size=3, 
-                   min.segment.length = unit(.5, 'cm'), 
-                   aes(label = NAME_2, x = long, y = lat, group = NAME_2)) +
-  labs(x=" ", y=" ") + 
-  theme_bw() + 
-  scale_fill_brewer('Unemployment Rate (Jan 2011)', palette  = 'PuRd') + 
-  coord_map() + 
-  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank()) + 
-  theme(axis.ticks = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
-  theme(panel.border = element_blank()) +
-  theme(legend.position = 'top')
-```
-
-```{r, eval=TRUE, fig.width=10}
+```{r, eval=TRUE, fig.width=10, fig.height=10}
 # join the accidents and municipality tables
 # need to translate from cyrilic to latin alphabet
 traffacc %>% 
-  group_by(Mun2) %>% 
+  group_by(MunLatin) %>% 
   count %>% 
-  rename(id=Mun2) ->
+  rename(id=MunLatin) ->
   tr.sum
 
 # id's are in latin (LHS) and cyrilic (RHS)
 mkop.df3 <- left_join(mkop.df, tr.sum)
+mkop.centroids.df <- mkop.centroids.df %>% 
+  rename(id=NAME_2) %>% 
+  left_join(tr.sum) %>% 
+  mutate(idmk=stringi::stri_trans_general(id, 'cyrillic')) %>% 
+  mutate(idmk_rm_na=ifelse(is.na(n), "", idmk))
+
 
 ggplot(mkop.df3, aes(x = long, y = lat, group = group)) + 
-  geom_polygon(aes(fill = n)) +
+  #geom_line(size=0.2, colour="orange")+
+  geom_polygon(colour="black", size=.1, aes(fill = n)) +
   geom_label_repel(data = mkop.centroids.df, size=3, 
                    min.segment.length = unit(.5, 'cm'), 
-                   aes(label = NAME_2, x = long, y = lat, group = NAME_2)) +
+                   aes(label = idmk_rm_na, x = long, y = lat, group = idmk_rm_na)) +
   labs(x=" ", y=" ") + 
   theme_bw() + 
-  scale_fill_brewer('Unemployment Rate (Jan 2011)', palette  = 'PuRd') + 
+  scale_fill_viridis('Број на незгоди', na.value="white" ) + 
   coord_map() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank()) + 
   theme(axis.ticks = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
