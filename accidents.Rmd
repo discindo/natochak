@@ -5,6 +5,8 @@ output:
     toc: true
     fig_cap: true
     df_print: paged
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -18,7 +20,13 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(lubridate))
 suppressPackageStartupMessages(library(patchwork))
 suppressPackageStartupMessages(library(viridis))
+suppressPackageStartupMessages(library(ggrepel))
 ```
+
+## To do
+
+- all graphs with `Outcome` should use the ordered factor, and maybe be sequentially filled to reflect severity
+
 
 ## Вовед
 
@@ -37,6 +45,7 @@ suppressPackageStartupMessages(library(viridis))
 ```{r}
 #get the data
 accidents <- as_tibble(read_csv("mvr-data.csv"))
+accidents$Mun[accidents$Mun=='Стурга'] <- "Струга"
 ```
 
 ```{r}
@@ -50,7 +59,7 @@ traffacc <- accidents %>%
   #filter so we keep just the traffic accidents
   filter(Event == "сообраќајна незгода") %>% 
   mutate(Outcome = ordered(Outcome, levels = c("непознато", "повреда", "тешка повреда", "животна опасност", "смрт"))) %>% 
-  mutate_if(is.na(Mun), Mun = Place )
+  mutate(Mun2=ifelse(is.na(Mun), Place, Mun))
 ```
 
 
@@ -269,8 +278,14 @@ p2 <- ggplot(traffacc, aes(x=TimeHM, group=TypeOfRoadMK, fill=TypeOfRoadMK)) +
 p1 + p2 
 ```
 
+```{r}
+suppressPackageStartupMessages(library(raster))
+suppressPackageStartupMessages(library(rgdal))
+suppressPackageStartupMessages(library(rgeos))
+```
+
+
 ```{r, eval = FALSE}
-library(raster)
 #get spatial data for Macedonia from GADM (but don't download every time)
 MKD.adm1.spdf <- 
   getData(
@@ -286,21 +301,62 @@ MKD.adm1.spdf <-
 # map accidents to regions/municipalities
 # every town is a municipality 
 # just add municipalities for villages (start with 'с.')
-library(rgdal)
 
 # Read in administrative area level data
 #https://stackoverflow.com/questions/17723822/administrative-regions-map-of-a-country-with-ggmap-and-ggplot2
-load("MKD.adm1.spdf.RData")
-MKD.adm1.spdf <- get("gadm")
-
-
-#obsolete?
-library(ggmap)
-library(rworldmap)
-globe <- getMap()
-mkd <- data.frame(globe@polygons[[104]]@Polygons[[1]]@coords)
-colnames(mkd) <- c("lon", "lat")
-ggplot(mkd, aes(x=lon, y=lat)) + coord_fixed(1.4) +
-  geom_polygon(color = "black", fill = "gray") +
-  theme_nothing()
+mkop <- get(load("MKD.adm1.spdf.RData"))
+mkop.df <- fortify(mkop, region = "NAME_1")
+mkop.centroids.df <- data.frame(long = coordinates(mkop)[, 1],
+                                lat = coordinates(mkop)[, 2]) 
+mkop.centroids.df[, 'ID_2'] <- mkop@data[,'ID_1']
+mkop.centroids.df[, 'NAME_2'] <- mkop@data[,'NAME_1']
 ```
+
+```{r, eval=TRUE, fig.width=10}
+unemployment.df <- data.frame(id= unique(mkop.df[,'id']),
+                              unemployment = runif(n = length(unique(mkop.df[,'id'])), min = 0, max = 25))
+mkop.df2 <- merge(mkop.df, unemployment.df, by.y = 'id', all.x = TRUE)
+
+# join the accidents and municipality tables
+ggplot(mkop.df2, aes(x = long, y = lat, group = group)) + 
+  geom_polygon(aes(fill = cut(unemployment,5))) +
+  geom_label_repel(data = mkop.centroids.df, size=3, 
+                   min.segment.length = unit(.5, 'cm'), 
+                   aes(label = NAME_2, x = long, y = lat, group = NAME_2)) +
+  labs(x=" ", y=" ") + 
+  theme_bw() + 
+  scale_fill_brewer('Unemployment Rate (Jan 2011)', palette  = 'PuRd') + 
+  coord_map() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank()) + 
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
+  theme(panel.border = element_blank()) +
+  theme(legend.position = 'top')
+```
+
+```{r, eval=TRUE, fig.width=10}
+# join the accidents and municipality tables
+# need to translate from cyrilic to latin alphabet
+traffacc %>% 
+  group_by(Mun2) %>% 
+  count %>% 
+  rename(id=Mun2) ->
+  tr.sum
+
+# id's are in latin (LHS) and cyrilic (RHS)
+mkop.df3 <- left_join(mkop.df, tr.sum)
+
+ggplot(mkop.df3, aes(x = long, y = lat, group = group)) + 
+  geom_polygon(aes(fill = n)) +
+  geom_label_repel(data = mkop.centroids.df, size=3, 
+                   min.segment.length = unit(.5, 'cm'), 
+                   aes(label = NAME_2, x = long, y = lat, group = NAME_2)) +
+  labs(x=" ", y=" ") + 
+  theme_bw() + 
+  scale_fill_brewer('Unemployment Rate (Jan 2011)', palette  = 'PuRd') + 
+  coord_map() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank()) + 
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
+  theme(panel.border = element_blank()) +
+  theme(legend.position = 'top')
+```
+
