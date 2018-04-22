@@ -63,9 +63,9 @@ traffacc <- accidents %>%
 ```{r}
 #deal with the municipalities
 traffacc <- traffacc %>% 
-  mutate(Mun2=ifelse(is.na(Mun), Place, Mun)) %>%
-  mutate(MunLatin = stringi::stri_trans_general(Mun2, 'latin'))
-#todo group spatial data into for skopje into one Mun
+  mutate(Mun2 = ifelse(is.na(Mun), Place, Mun)) %>%
+  mutate(MunLatin = stringi::stri_trans_general(Mun2, 'latin')) %>%
+  mutate(MunLatin = ifelse(MunLatin == "Ǵorče Petrov", MunLatin = "Gjorče Petrov"))
 ```
 
 
