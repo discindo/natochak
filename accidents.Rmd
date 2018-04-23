@@ -322,6 +322,8 @@ colnames(mkop.centroids.df) <- c("long", "lat", "num", "id")
 #mkop.centroids.df$id[mkop.centroids.df$id %in% Skopski_opstini] <- "Skopje"
 ```
 
+## Географска дистрибуција на сообраќајните незгоди во кои страделе велосипедисти
+
 ```{r, eval=TRUE, fig.width=10, fig.height=10}
 # join the accidents and municipality tables
 traffacc %>% 
