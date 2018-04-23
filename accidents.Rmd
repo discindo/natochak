@@ -67,10 +67,10 @@ traffacc <- traffacc %>%
   mutate(MunLatin = stringi::stri_trans_general(Mun2, 'latin')) %>%
   mutate(MunLatin = ifelse(MunLatin == "Ǵorče Petrov", "Gjorče Petrov", MunLatin))
 
-Skopski_opstini <- c("Aerodrom", "Centar", "Gjorče Petrov", "Kisela Voda", "Karpoš", "Gazi Baba", "Arachinovo", "Ilinden")
-traffacc$MunLatin2 <- traffacc$MunLatin
-traffacc$MunLatin2[traffacc$MunLatin2 %in% Skopski_opstini] <- "Skopje"
-traffacc$MunLatin[traffacc$MunLatin %in% Skopski_opstini] <- "Skopje"
+#Skopski_opstini <- c("Aerodrom", "Centar", "Gjorče Petrov", "Kisela Voda", "Karpoš", "Gazi Baba", "Arachinovo", "Ilinden")
+#traffacc$MunLatin2 <- traffacc$MunLatin
+#traffacc$MunLatin2[traffacc$MunLatin2 %in% Skopski_opstini] <- "Skopje"
+#traffacc$MunLatin[traffacc$MunLatin %in% Skopski_opstini] <- "Skopje"
 
 ```
 
@@ -314,14 +314,14 @@ MKD.adm1.spdf <-
 #https://stackoverflow.com/questions/17723822/administrative-regions-map-of-a-country-with-ggmap-and-ggplot2
 mkop <- get(load("MKD.adm1.spdf.RData"))
 mkop.df <- fortify(mkop, region = "NAME_1")
-mkop.df$id[mkop.df$id %in% Skopski_opstini] <- "Skopje"
+#mkop.df$id[mkop.df$id %in% Skopski_opstini] <- "Skopje"
 
 mkop.centroids.df <- data.frame(long = coordinates(mkop)[, 1],
                                 lat = coordinates(mkop)[, 2]) 
 mkop.centroids.df[, 'ID_2'] <- mkop@data[,'ID_1']
 mkop.centroids.df[, 'NAME_2'] <- mkop@data[,'NAME_1']
 colnames(mkop.centroids.df) <- c("long", "lat", "num", "id")
-mkop.centroids.df$id[mkop.centroids.df$id %in% Skopski_opstini] <- "Skopje"
+#mkop.centroids.df$id[mkop.centroids.df$id %in% Skopski_opstini] <- "Skopje"
 ```
 
 ```{r, eval=TRUE, fig.width=10, fig.height=10}
@@ -339,6 +339,8 @@ mkop.centroids.df <- mkop.centroids.df %>%
   mutate(idmk_rm_na=ifelse(is.na(n), "", idmk)) 
 mkop.centroids.df$idmk_rm_na[mkop.centroids.df$idmk_rm_na == "Скопйе"] <- ""  
 mkop.centroids.df$idmk_rm_na[4] <- "Скопје"
+mkop.centroids.df$idmk_rm_na[mkop.centroids.df$idmk_rm_na == "Гйорче Петров"] <- ""  
+mkop.centroids.df$idmk_rm_na[4] <- "Ѓорче Петров"
 
 ggplot(mkop.df3, aes(x = long, y = lat, group = group)) + 
   #geom_line(size=0.2, colour="orange")+
@@ -354,6 +356,6 @@ ggplot(mkop.df3, aes(x = long, y = lat, group = group)) +
   theme(axis.ticks = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
   theme(panel.border = element_blank()) +
   theme(legend.position = 'top') +
-  labs(title="Географска дистрибуција на незгодите по општини. Скопските општини се групирани под името 'Скопје'")
+  labs(title="Географска дистрибуција на незгодите по општини.") #" Скопските општини се групирани под името 'Скопје'")
 ```
 
