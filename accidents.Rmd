@@ -11,7 +11,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 # set global chunk options
-knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE, cache=TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 ```
 
 
@@ -65,9 +65,14 @@ traffacc <- accidents %>%
 traffacc <- traffacc %>% 
   mutate(Mun2 = ifelse(is.na(Mun), Place, Mun)) %>%
   mutate(MunLatin = stringi::stri_trans_general(Mun2, 'latin')) %>%
-  mutate(MunLatin = ifelse(MunLatin == "Ǵorče Petrov", MunLatin = "Gjorče Petrov"))
-```
+  mutate(MunLatin = ifelse(MunLatin == "Ǵorče Petrov", "Gjorče Petrov", MunLatin))
 
+Skopski_opstini <- c("Aerodrom", "Centar", "Gjorče Petrov", "Kisela Voda", "Karpoš", "Gazi Baba", "Arachinovo", "Ilinden")
+traffacc$MunLatin2 <- traffacc$MunLatin
+traffacc$MunLatin2[traffacc$MunLatin2 %in% Skopski_opstini] <- "Skopje"
+traffacc$MunLatin[traffacc$MunLatin %in% Skopski_opstini] <- "Skopje"
+
+```
 
 ```{r}
 # time as time!
@@ -309,43 +314,46 @@ MKD.adm1.spdf <-
 #https://stackoverflow.com/questions/17723822/administrative-regions-map-of-a-country-with-ggmap-and-ggplot2
 mkop <- get(load("MKD.adm1.spdf.RData"))
 mkop.df <- fortify(mkop, region = "NAME_1")
+mkop.df$id[mkop.df$id %in% Skopski_opstini] <- "Skopje"
+
 mkop.centroids.df <- data.frame(long = coordinates(mkop)[, 1],
                                 lat = coordinates(mkop)[, 2]) 
 mkop.centroids.df[, 'ID_2'] <- mkop@data[,'ID_1']
 mkop.centroids.df[, 'NAME_2'] <- mkop@data[,'NAME_1']
+colnames(mkop.centroids.df) <- c("long", "lat", "num", "id")
+mkop.centroids.df$id[mkop.centroids.df$id %in% Skopski_opstini] <- "Skopje"
 ```
 
 ```{r, eval=TRUE, fig.width=10, fig.height=10}
 # join the accidents and municipality tables
-# need to translate from cyrilic to latin alphabet
 traffacc %>% 
   group_by(MunLatin) %>% 
   count %>% 
   rename(id=MunLatin) ->
   tr.sum
 
-# id's are in latin (LHS) and cyrilic (RHS)
 mkop.df3 <- left_join(mkop.df, tr.sum)
 mkop.centroids.df <- mkop.centroids.df %>% 
-  rename(id=NAME_2) %>% 
   left_join(tr.sum) %>% 
   mutate(idmk=stringi::stri_trans_general(id, 'cyrillic')) %>% 
-  mutate(idmk_rm_na=ifelse(is.na(n), "", idmk))
-
+  mutate(idmk_rm_na=ifelse(is.na(n), "", idmk)) 
+mkop.centroids.df$idmk_rm_na[mkop.centroids.df$idmk_rm_na == "Скопйе"] <- ""  
+mkop.centroids.df$idmk_rm_na[4] <- "Скопје"
 
 ggplot(mkop.df3, aes(x = long, y = lat, group = group)) + 
   #geom_line(size=0.2, colour="orange")+
-  geom_polygon(colour="black", size=.1, aes(fill = n)) +
+  geom_polygon(colour="black", size=.1, aes(fill = factor(n))) +
   geom_label_repel(data = mkop.centroids.df, size=3, 
                    min.segment.length = unit(.5, 'cm'), 
                    aes(label = idmk_rm_na, x = long, y = lat, group = idmk_rm_na)) +
   labs(x=" ", y=" ") + 
   theme_bw() + 
-  scale_fill_viridis('Број на незгоди', na.value="white" ) + 
+  scale_fill_viridis('Број на незгоди', na.value="white", discrete = TRUE) + 
   coord_map() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank()) + 
   theme(axis.ticks = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
   theme(panel.border = element_blank()) +
-  theme(legend.position = 'top')
+  theme(legend.position = 'top') +
+  labs(title="Географска дистрибуција на незгодите по општини. Скопските општини се групирани под името 'Скопје'")
 ```
 
