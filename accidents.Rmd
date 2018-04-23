@@ -322,7 +322,7 @@ colnames(mkop.centroids.df) <- c("long", "lat", "num", "id")
 #mkop.centroids.df$id[mkop.centroids.df$id %in% Skopski_opstini] <- "Skopje"
 ```
 
-## Географска дистрибуција на сообраќајните незгоди во кои страделе велосипедисти
+## Географска дистрибуција на сообраќајните незгоди во кои страдале велосипедисти
 
 ```{r, eval=TRUE, fig.width=10, fig.height=10}
 # join the accidents and municipality tables
@@ -356,5 +356,5 @@ ggplot(mkop.df3, aes(x = long, y = lat, group = group)) +
   theme(axis.ticks = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
   theme(panel.border = element_blank()) +
   theme(legend.position = 'top') +
-  labs(title="Географска дистрибуција на незгодите по општини.") #" Скопските општини се групирани под името 'Скопје'")
+  labs(title="Географска дистрибуција на незгодите по општини") #" Скопските општини се групирани под името 'Скопје'")
 ```
