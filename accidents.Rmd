@@ -159,13 +159,10 @@ with(traffacc, table(Month, Year))
 ```{r echo = FALSE, warning = FALSE}
 #new data sets for plot by age of persons
 veh1 <- traffacc %>%
-  select(DateOfEvent, TypeOfRoad, ends_with("1")) %>%
-  rename(Vehicle=Vehicle1, Age=AgeV1, Gender=GenderV1)
+  dplyr::select(DateOfEvent=DateOfEvent, TypeOfRoad=TypeOfRoad, Vehicle=Vehicle1, Age=AgeV1, Gender=GenderV1)
 
 veh2 <- traffacc %>%
-  select(DateOfEvent, TypeOfRoad, ends_with("2")) %>%
-  rename(Vehicle=Vehicle2, Age=AgeV2, Gender=GenderV2) %>%
-  select(-TypeV2, -AlchoholV2)
+  dplyr::select(DateOfEvent=DateOfEvent, TypeOfRoad=TypeOfRoad, Vehicle=Vehicle2, Age=AgeV2, Gender=GenderV2) 
 
 #plot the age of cyclists and drivers
 both_veh <- bind_rows(veh1, veh2)
