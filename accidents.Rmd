@@ -23,11 +23,6 @@ suppressPackageStartupMessages(library(viridis))
 suppressPackageStartupMessages(library(ggrepel))
 ```
 
-## To do
-
-- all graphs with `Outcome` should use the ordered factor, and maybe be sequentially filled to reflect severity
-
-
 ## Вовед
 
 На крајот на март 2018 година иницијативата На Точак објави [статистики](https://natochak.blogspot.mk/2018/03/blog-post_1.html) за сообраќајните незгоди во Македонија што вклучуваат велосипедисти. Оваа презентација оди чекор понатаму со тоа што додава повеќе податоци за анализа и можеби отркива некои трендови (patterns?) по кои што се случуваат незгодите. Презентацијата подолу се фокусира само на сообраќајни незгоди, пред се автомобил/велосипед. Други инциденти, како што е на пример напад од куче, не се вклучени.
