@@ -89,8 +89,8 @@ traffacc <- traffacc %>%
 ```{r, fig.width=10}
 ggplot(traffacc, aes(x=AgeV1, y=TimeHM, fill = Outcome, ordered = TRUE)) +
   geom_point(size = 3, alpha = 0.9, pch=21) +
-  #scale_fill_brewer(name="Вид на повреда", type=seq, palette = "OrRd") +
-  scale_color_viridis(name="Вид на повреда", discrete = TRUE, option = "D") +
+  labs(fill="Вид на повреда") +
+  scale_color_viridis(discrete = TRUE, option = "D") +
   facet_wrap("TypeOfRoadMK", ncol=3) +
   theme(legend.position="top") +
   scale_y_time() +
