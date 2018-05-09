@@ -345,7 +345,7 @@ ggplot(mkop.df3, aes(x = long, y = lat, group = group)) +
                    aes(label = idmk_rm_na, x = long, y = lat, group = idmk_rm_na)) +
   labs(x=" ", y=" ") + 
   theme_bw() + 
-  scale_fill_viridis('Број на незгоди', na.value="white", discrete = TRUE) + 
+  scale_fill_viridis('Број на незгоди', na.value="white", discrete = TRUE, option="magma", direction = -1) + 
   coord_map() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank()) + 
   theme(axis.ticks = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
