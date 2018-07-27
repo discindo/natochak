@@ -5,6 +5,7 @@ library(shiny)
 library(shinythemes)
 library(tidyverse)
 library(stringr)
+library(plotly)
 
 acc <- read_csv("acc.csv") %>% as_tibble()
 
