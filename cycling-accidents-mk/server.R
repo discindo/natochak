@@ -2,12 +2,15 @@ library(shiny)
 library(tidyverse)
 library(plotly)
 
-acc <- read_csv("acc.csv") %>% as_tibble()
+# acc <- read_csv("mkacc.csv", col_types = "TTicicttcccciiccccc") %>% as_tibble()
+acc <- read_csv("mkacc.csv") %>% as_tibble()
 
 theme_cycles <- 
   theme_minimal() +
-  theme(axis.text = element_text(size=12),
-        axis.title = element_text(size=16))
+  theme(legend.position = "top",
+        axis.text = element_text(size=12),
+        axis.title = element_text(size=16)
+        )
 
 shinyServer(function(input, output) {
   
@@ -16,21 +19,61 @@ shinyServer(function(input, output) {
     return(x)
   })
   
-  make_bar_plot <- reactive ({
+  make_bar_plot <- function(focal_category) {
+    
+    pp <- ggplot(acc, aes_(x=as.name(focal_category), fill=~`Последица`)) +
+      geom_bar() +
+      scale_fill_brewer(palette = "Spectral") +
+      theme_cycles +
+      theme(axis.title.x = element_blank()) +
+      labs(y="Број")
+    
+    how_many_levels <- acc %>% select_(~fc) %>% distinct %>% nrow
+  
+    if ( how_many_levels > 5) {
+      pp <- pp + coord_flip()
+    } 
+    
+    # pp2 <- ggplotly(pp)
+    return(pp)
+  }
+  
+  make_histogram <- function(focal_category) {
+    
+    pp <- ggplot(acc, aes_(x=as.name(focal_category), group=~`Последица`, fill=~`Последица`)) +
+      geom_histogram() +
+      scale_fill_brewer(palette = "Spectral") +
+      theme_cycles +
+      labs(y="Број")
+    
+    return(pp)
+  }
+  
+  what_type_of_plot <- reactive({
     focal_category <- what_category()
     
-    pp <- ggplot(acc, aes_(x=as.name(focal_category), fill=~Outcome)) +
-      geom_bar() +
-      coord_flip() +
-      scale_fill_brewer(palette = "Spectral") +
-      theme_cycles
+    class_focal <- class(focal_category) %>% unique
     
-    pp2 <- ggplotly(pp)
-    return(pp2)
+    if (class_focal %in% c("character", "factor")) {
+      xx <- make_bar_plot(focal_category)
+    }
+    
+    if (class_focal %in% c("numeric", "integer", "hms", "difftime", "POSIXct", "POSIXt")) {
+      xx <- make_histogram(focal_category)
+    }
+        
+    return(xx)
   })
+    
   
-  output$bar_plot <- renderPlotly({
-    make_bar_plot()
+  
+  # output$bar_plot <- renderPlotly({
+  #   make_bar_plot()
+  #   
+  # })
+
+  output$bar_plot <- renderPlot({
+    what_type_of_plot()
     
   })
   
