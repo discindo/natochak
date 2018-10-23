@@ -7,3 +7,6 @@ accidents_cache
 accidents_files
 natochak.Rproj
 .ipynb_checkpoints
+GADM_2.8_PAK_adm1.rds
+_site/
+accidents.nb.html
