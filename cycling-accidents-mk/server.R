@@ -28,7 +28,7 @@ shinyServer(function(input, output) {
       theme(axis.title.x = element_blank()) +
       labs(y="Број")
     
-    how_many_levels <- acc %>% select_(~fc) %>% distinct %>% nrow
+    how_many_levels <- acc %>% select_(~focal_category) %>% distinct %>% nrow
   
     if ( how_many_levels > 5) {
       pp <- pp + coord_flip()
